@@ -27,7 +27,7 @@ def main(video):
 
             # Matplotlib
             ax.clear()
-            ax.bar(hist)
+            ax.plot(hist)
 
             plt.draw()
             plt.pause(0.01)
