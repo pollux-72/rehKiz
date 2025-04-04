@@ -1,7 +1,8 @@
+import pathlib
 import argparse
+
 import numpy as np
 from PIL import Image, ImageDraw
-
 import cv2
 
 
@@ -9,9 +10,13 @@ def main(video):
 
 
     wait = False
+    save = False
+    frame = 0
 
     # read the video
     cap = cv2.VideoCapture(video)
+
+    video = pathlib.Path(video)
     
     # loop over frames
     while True:
@@ -20,6 +25,8 @@ def main(video):
 
         if kp == ord('s'):
             wait = not wait
+        elif kp == ord('w'):
+            save = not save
         elif kp == ord('q'):
             cap.release()
             cv2.destroyAllWindows()
@@ -34,7 +41,7 @@ def main(video):
         img = cv2.cvtColor(orig_img, cv2.COLOR_BGR2GRAY)
         if not ret:
             return
-        
+
         # parameters for clipping
         minimum = 120
         maximum = 200
@@ -52,6 +59,13 @@ def main(video):
         # show the result
         cv2.imshow('object detection', image_np_with_detections)
 
+        if save:
+            filename = f'{video.name}-{frame}.jpg'
+            print(f'Save snapshot: {filename}')
+            cv2.imwrite(filename, image_np_with_detections)
+            save = False
+
+        frame += 1
 
 
 if __name__ == '__main__':
