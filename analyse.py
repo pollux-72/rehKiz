@@ -2,10 +2,22 @@ import argparse
 
 import cv2
 import time
+import numpy as np
 
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use("TkAgg") 
+
+def showPixelValue(event, x, y, flags, img):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        pixel_value = img[y, x]
+        
+        # Pixelwerte auf das Bild schreiben
+        text = f"{pixel_value}"
+        cv2.putText(img, text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        
+        # Bild anzeigen
+        cv2.imshow('object detection', img)
 
 def main(video):
     plt.ion()
@@ -18,11 +30,13 @@ def main(video):
         if not paused:
             # CV
             ret, img = cap.read()
+
             if not ret:
                 break # No image available. Exit loop
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             cv2.imshow('object detection', img) 
-            #cv2.resize(im, (640, 640)))
+            cv2.setMouseCallback('object detection', showPixelValue, img)
+            cv2.resize(img, (640, 640))
             hist = cv2.calcHist(img, [0], None, [256], [0, 256])
 
             # Matplotlib
