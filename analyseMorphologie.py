@@ -46,14 +46,14 @@ def main(video):
             cv2.imshow("gradient", grad)
 
             # Gaussian filter for Blur
-            blur = cv2.GaussianBlur(grad, (41, 41), 0)
+            blur = cv2.GaussianBlur(grad, (101, 101), 10)
 
             # Reduce Noise in Image
             gradBlurDiff = cv2.subtract(grad, blur)
             cv2.imshow("Grad - Blur", gradBlurDiff)
 
             # Binarization with hard threshold
-            _, binary = cv2.threshold(grad, 150, 255, cv2.THRESH_BINARY)
+            _, binary = cv2.threshold(grad, 170, 255, cv2.THRESH_BINARY)
 
             # Closing holes in binarized Image
             closure = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (40, 40)))
@@ -66,7 +66,12 @@ def main(video):
             # Visualizing Contours
             contours, hierarchy = cv2.findContours(diletation,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) # So the bounding box can be colorful
-            cv2.drawContours(img, contours, -1, (0, 0, 140), 3)
+            for cont in contours:
+                moment = cv2.moments(cont)
+                cx = int(moment['m10']/moment['m00'])
+                cy = int(moment['m01']/moment['m00'])
+                cv2.rectangle(img, (cx-10, cy+10), (cx+10, cy-10), (0, 0, 140), 3)
+            # cv2.drawContours(img, contours, -1, (0, 0, 140), 3)
             cv2.imshow("Bounding Box", img)
 
             # Matplotlib
